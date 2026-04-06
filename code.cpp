@@ -160,7 +160,7 @@ string getUsername(istream& in, ostream& out, const string& users_dir) {
         out << "Do you have a username? (yes/no or cancel):";
 
         string answer;
-        getline(in, answer);
+        if (!getline(in, answer)) return "";
         trim(answer);
         answer = tolowerString(answer);
 
@@ -172,7 +172,7 @@ string getUsername(istream& in, ostream& out, const string& users_dir) {
                 out << "\nEnter your username (or type 'cancel'):";
 
                 string username;
-                getline(in, username);
+                if (!getline(in, username)) return "";
                 trim(username);
 
                 if (tolowerString(username) == "cancel") {
@@ -192,7 +192,7 @@ string getUsername(istream& in, ostream& out, const string& users_dir) {
                 out << "\nPick a username (or type 'cancel'):";
 
                 string username;
-                getline(in, username);
+                if (!getline(in, username)) return "";
                 trim(username);
 
                 if (tolowerString(username) == "cancel") {
