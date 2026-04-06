@@ -152,11 +152,12 @@ bool usernameExists(const string& username, const string& dir) {
 }
 
 // ================= getUsername =================
-string getUsername(istream& in, ostream& out, const string& dir) {
-    filesystem::create_directory(dir);
+string getUsername(istream& in, ostream& out, const string& users_dir) {
+    namespace fs = filesystem;
+    fs::create_directories(users_dir);
 
     while (true) {
-        out << "Do you have a username? (yes/no or cancel):\n";
+        out << "Do you have a username? (yes/no or cancel):";
 
         string answer;
         getline(in, answer);
@@ -168,7 +169,7 @@ string getUsername(istream& in, ostream& out, const string& dir) {
         }
         else if (answer == "yes") {
             while (true) {
-                out << "Enter your username (or type 'cancel'):\n";
+                out << "\nEnter your username (or type 'cancel'):";
 
                 string username;
                 getline(in, username);
@@ -178,8 +179,8 @@ string getUsername(istream& in, ostream& out, const string& dir) {
                     return "";
                 }
 
-                if (!usernameExists(username, dir)) {
-                    out << "The username provided does not exist. Please try again.\n";
+                if (!usernameExists(username, users_dir)) {
+                    out << "\nThe username provided does not exist. Please try again.\n";
                     continue;
                 }
 
@@ -188,7 +189,7 @@ string getUsername(istream& in, ostream& out, const string& dir) {
         }
         else if (answer == "no") {
             while (true) {
-                out << "Pick a username (or type 'cancel'):\n";
+                out << "\nPick a username (or type 'cancel'):";
 
                 string username;
                 getline(in, username);
@@ -199,32 +200,36 @@ string getUsername(istream& in, ostream& out, const string& dir) {
                 }
 
                 if (username.empty()) {
-                    out << "Username cannot be empty. Please try again.\n";
+                    out << "\nUsername cannot be empty. Please try again.\n";
                     continue;
                 }
 
-                if (usernameExists(username, dir)) {
-                    out << "Username already taken. Please pick another.\n";
+                string lowered = tolowerString(username);
+
+                if (usernameExists(lowered, users_dir)) {
+                    out << "\nUsername already taken. Please pick another.\n";
                     continue;
                 }
 
                 string error = validateUsername(username);
                 if (!error.empty()) {
-                    out << error << "\n";
+                    out << "\n" << error << "\n";
                     continue;
                 }
 
-                ofstream file(dir + username + ".csv");
+                fs::path filepath = fs::path(users_dir) / (lowered + ".csv");
+                ofstream file(filepath);
+
                 if (!file.is_open()) {
                     return "";
                 }
 
-                out << "Username " << username << " created.\n";
-                return username;
+                out << "\nUsername " << lowered << " created.\n";
+                return lowered;
             }
         }
         else {
-            out << "Pick an option and try again!\n";
+            out << "\nPick an option and try again!\n";
         }
     }
 }
