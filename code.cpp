@@ -3,44 +3,53 @@
 using namespace std;
 
 // ================= trim =================
-void trim(string& str) {
+void trim(string& str) 
+{
     size_t start = str.find_first_not_of(" \t\n\r");
     size_t end = str.find_last_not_of(" \t\n\r");
 
-    if (start == string::npos) {
+    if (start == string::npos) 
+    {
         str = "";
-    } else {
+    } else 
+    {
         str = str.substr(start, end - start + 1);
     }
 }
 
 // ================= tolowerString =================
-string tolowerString(const string& str) {
+string tolowerString(const string& str) 
+{
     string result = str;
-    for (char& c : result) {
+    for (char& c : result) 
+    {
         c = tolower(static_cast<unsigned char>(c));
     }
     return result;
 }
 
 // ================= destinationExists =================
-bool destinationExists(const string& destination, const string& destinations_dir) {
+bool destinationExists(const string& destination, const string& destinations_dir) 
+{
     filesystem::path path = filesystem::path(destinations_dir) / (destination + ".csv");
     return filesystem::exists(path);
 }
 
 // ================= parseCSVLine =================
-vector<string> parseCSVLine(const string& line) {
+vector<string> parseCSVLine(const string& line) 
+{
     vector<string> result;
     string field;
     stringstream ss(line);
 
-    while (getline(ss, field, ',')) {
+    while (getline(ss, field, ',')) 
+    {
         trim(field);
         result.push_back(field);
     }
 
-    if (!line.empty() && line.back() == ',') {
+    if (!line.empty() && line.back() == ',') 
+    {
         result.push_back("");
     }
 
@@ -48,11 +57,13 @@ vector<string> parseCSVLine(const string& line) {
 }
 
 // ================= loadAirportFromFile =================
-Airport* loadAirportFromFile(const string& destination, const string& destinations_dir) {
+Airport* loadAirportFromFile(const string& destination, const string& destinations_dir) 
+{
     filesystem::path path = filesystem::path(destinations_dir) / (destination + ".csv");
     ifstream file(path);
 
-    if (!file.is_open()) {
+    if (!file.is_open()) 
+    {
         return nullptr;
     }
 
@@ -60,18 +71,22 @@ Airport* loadAirportFromFile(const string& destination, const string& destinatio
     airport->name = destination;
 
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line)) 
+    {
         trim(line);
-        if (line.empty()) {
+        if (line.empty()) 
+        {
             continue;
         }
 
         vector<string> fields = parseCSVLine(line);
-        if (fields.size() < 4) {
+        if (fields.size() < 4) 
+        {
             continue;
         }
 
-        try {
+        try 
+        {
             int capacity = stoi(fields[3]);
 
             Flight* flight = new Flight;
@@ -83,7 +98,8 @@ Airport* loadAirportFromFile(const string& destination, const string& destinatio
 
             airport->flights.push_back(flight);
         }
-        catch (...) {
+        catch (...) 
+        {
             continue;
         }
     }
@@ -92,12 +108,15 @@ Airport* loadAirportFromFile(const string& destination, const string& destinatio
 }
 
 // ================= deleteAirport =================
-void deleteAirport(Airport* airport) {
-    if (airport == nullptr) {
+void deleteAirport(Airport* airport) 
+{
+    if (airport == nullptr) 
+    {
         return;
     }
 
-    for (Flight* flight : airport->flights) {
+    for (Flight* flight : airport->flights) 
+    {
         delete flight;
     }
 
@@ -105,10 +124,12 @@ void deleteAirport(Airport* airport) {
 }
 
 // ================= printFlight =================
-Error printFlight(const string& destination, const string& destinations_dir, ostream& out) {
+Error printFlight(const string& destination, const string& destinations_dir, ostream& out) 
+{
     Airport* airport = loadAirportFromFile(destination, destinations_dir);
 
-    if (airport == nullptr || airport->flights.empty()) {
+    if (airport == nullptr || airport->flights.empty()) 
+    {
         deleteAirport(airport);
         return Error::UNAVAILABLE;
     }
@@ -119,7 +140,8 @@ Error printFlight(const string& destination, const string& destinations_dir, ost
         << setw(15) << "Origin"
         << setw(15) << "Capacity" << "\n";
 
-    for (Flight* flight : airport->flights) {
+    for (Flight* flight : airport->flights) 
+    {
         out << setw(15) << flight->flight_number
             << setw(15) << flight->airline
             << setw(15) << flight->origin
@@ -131,32 +153,41 @@ Error printFlight(const string& destination, const string& destinations_dir, ost
 }
 
 // ================= validateUsername =================
-string validateUsername(const string& username) {
-    if (username.empty()) {
+string validateUsername(const string& username) 
+{
+    if (username.empty()) 
+    {
         return "Username cannot be empty.";
     }
-    if (username.length() < 3) {
+    if (username.length() < 3) 
+    {
         return "Username must be at least 3 characters.";
     }
-    if (username.length() > 20) {
+    if (username.length() > 20) 
+    {
         return "Username must be at most 20 characters.";
     }
-    if (!isalpha(static_cast<unsigned char>(username[0]))) {
+    if (!isalpha(static_cast<unsigned char>(username[0]))) 
+    {
         return "Username must start with a letter.";
     }
 
-    for (size_t i = 0; i < username.size(); i++) {
+    for (size_t i = 0; i < username.size(); i++) 
+    {
         char c = username[i];
 
-        if (!isalnum(static_cast<unsigned char>(c)) && c != '_' && c != '-') {
+        if (!isalnum(static_cast<unsigned char>(c)) && c != '_' && c != '-') 
+        {
             return "Username can only contain letters, numbers, underscores, and hyphens.";
         }
 
-        if (i > 0) {
+        if (i > 0) 
+        {
             bool current_special = (c == '_' || c == '-');
             bool previous_special = (username[i - 1] == '_' || username[i - 1] == '-');
 
-            if (current_special && previous_special) {
+            if (current_special && previous_special) 
+            {
                 return "Username cannot have consecutive underscores or hyphens.";
             }
         }
@@ -166,22 +197,27 @@ string validateUsername(const string& username) {
 }
 
 // ================= usernameExists =================
-bool usernameExists(const string& username, const string& users_dir) {
+bool usernameExists(const string& username, const string& users_dir) 
+{
     namespace fs = filesystem;
 
-    if (!fs::exists(users_dir)) {
+    if (!fs::exists(users_dir)) 
+    {
         return false;
     }
 
     string target = tolowerString(username);
 
-    for (const auto& entry : fs::directory_iterator(users_dir)) {
-        if (!entry.is_regular_file()) {
+    for (const auto& entry : fs::directory_iterator(users_dir)) 
+    {
+        if (!entry.is_regular_file()) 
+        {
             continue;
         }
 
         string stem = entry.path().stem().string();
-        if (tolowerString(stem) == target) {
+        if (tolowerString(stem) == target) 
+        {
             return true;
         }
     }
@@ -190,41 +226,50 @@ bool usernameExists(const string& username, const string& users_dir) {
 }
 
 // ================= getUsername =================
-string getUsername(istream& in, ostream& out, const string& users_dir) {
+string getUsername(istream& in, ostream& out, const string& users_dir) 
+{
     namespace fs = filesystem;
     fs::create_directories(users_dir);
 
-    while (true) {
+    while (true) 
+    {
         out << "Do you have a username? (yes/no or cancel):";
 
         string answer;
-        if (!getline(in, answer)) {
+        if (!getline(in, answer)) 
+        {
             return "";
         }
 
         trim(answer);
         answer = tolowerString(answer);
 
-        if (answer == "cancel") {
+        if (answer == "cancel") 
+        {
             return "";
         }
-        else if (answer == "yes") {
-            while (true) {
+        else if (answer == "yes") 
+        {
+            while (true) 
+            {
                 out << "\nEnter your username (or type 'cancel'):";
 
                 string username;
-                if (!getline(in, username)) {
+                if (!getline(in, username)) 
+                {
                     return "";
                 }
 
                 trim(username);
                 string lowered = tolowerString(username);
 
-                if (lowered == "cancel") {
+                if (lowered == "cancel") 
+                {
                     break;
                 }
 
-                if (!usernameExists(lowered, users_dir)) {
+                if (!usernameExists(lowered, users_dir)) 
+                {
                     out << "\nThe username provided does not exist. Please try again.\n";
                     continue;
                 }
@@ -232,34 +277,41 @@ string getUsername(istream& in, ostream& out, const string& users_dir) {
                 return lowered;
             }
         }
-        else if (answer == "no") {
-            while (true) {
+        else if (answer == "no") 
+        {
+            while (true) 
+            {
                 out << "\nPick a username (or type 'cancel'):";
 
                 string username;
-                if (!getline(in, username)) {
+                if (!getline(in, username)) 
+                {
                     return "";
                 }
 
                 trim(username);
                 string lowered = tolowerString(username);
 
-                if (lowered == "cancel") {
+                if (lowered == "cancel")
+                {
                     break;
                 }
 
-                if (username.empty()) {
+                if (username.empty()) 
+                {
                     out << "\nUsername cannot be empty. Please try again.\n";
                     continue;
                 }
 
-                if (usernameExists(lowered, users_dir)) {
+                if (usernameExists(lowered, users_dir)) 
+                {
                     out << "\nUsername already taken. Please pick another.\n";
                     continue;
                 }
 
                 string error = validateUsername(username);
-                if (!error.empty()) {
+                if (!error.empty()) 
+                {
                     out << "\n" << error << "\n";
                     continue;
                 }
@@ -267,7 +319,8 @@ string getUsername(istream& in, ostream& out, const string& users_dir) {
                 fs::path filepath = fs::path(users_dir) / (lowered + ".csv");
                 ofstream file(filepath);
 
-                if (!file.is_open()) {
+                if (!file.is_open()) 
+                {
                     return "";
                 }
 

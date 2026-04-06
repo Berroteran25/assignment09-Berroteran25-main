@@ -12,7 +12,8 @@
 using namespace std;
 
 // ================= ENUM =================
-enum class Error {
+enum class Error 
+{
     SUCCESS,
     INVALID,
     MISSING,
@@ -21,7 +22,8 @@ enum class Error {
 };
 
 // ================= STRUCTS =================
-struct Flight {
+struct Flight 
+{
     string flight_number = "missing";
     string airline = "missing";
     string origin = "missing";
@@ -30,7 +32,8 @@ struct Flight {
     vector<string> passengers;
 };
 
-struct Airport {
+struct Airport 
+{
     string name = "missing";
     vector<Flight*> flights;
 };
