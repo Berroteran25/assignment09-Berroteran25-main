@@ -156,34 +156,75 @@ string getUsername(istream& in, ostream& out, const string& dir) {
     filesystem::create_directory(dir);
 
     while (true) {
-        out << "Pick a username (or type 'cancel'):\n";
+        out << "Do you have a username? (yes/no or cancel):\n";
 
-        string username;
-        getline(in, username);
-        trim(username);
+        string answer;
+        getline(in, answer);
+        trim(answer);
+        answer = tolowerString(answer);
 
-        if (tolowerString(username) == "cancel") return "";
-
-        if (username.empty()) {
-            out << "Username cannot be empty. Please try again.\n";
-            continue;
+        if (answer == "cancel") {
+            return "";
         }
+        else if (answer == "yes") {
+            while (true) {
+                out << "Enter your username (or type 'cancel'):\n";
 
-        if (usernameExists(username, dir)) {
-            out << "Username already taken. Please pick another.\n";
-            continue;
+                string username;
+                getline(in, username);
+                trim(username);
+
+                if (tolowerString(username) == "cancel") {
+                    return "";
+                }
+
+                if (!usernameExists(username, dir)) {
+                    out << "The username provided does not exist. Please try again.\n";
+                    continue;
+                }
+
+                return username;
+            }
         }
+        else if (answer == "no") {
+            while (true) {
+                out << "Pick a username (or type 'cancel'):\n";
 
-        string error = validateUsername(username);
-        if (!error.empty()) {
-            out << error << "\n";
-            continue;
+                string username;
+                getline(in, username);
+                trim(username);
+
+                if (tolowerString(username) == "cancel") {
+                    return "";
+                }
+
+                if (username.empty()) {
+                    out << "Username cannot be empty. Please try again.\n";
+                    continue;
+                }
+
+                if (usernameExists(username, dir)) {
+                    out << "Username already taken. Please pick another.\n";
+                    continue;
+                }
+
+                string error = validateUsername(username);
+                if (!error.empty()) {
+                    out << error << "\n";
+                    continue;
+                }
+
+                ofstream file(dir + username + ".csv");
+                if (!file.is_open()) {
+                    return "";
+                }
+
+                out << "Username " << username << " created.\n";
+                return username;
+            }
         }
-
-        ofstream file(dir + username + ".csv");
-        if (!file.is_open()) return "";
-
-        out << "Username " << username << " created.\n";
-        return username;
+        else {
+            out << "Pick an option and try again!\n";
+        }
     }
 }
