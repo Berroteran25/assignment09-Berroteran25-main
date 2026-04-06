@@ -32,11 +32,17 @@ bool destinationExists(const string& destination, const string& dir) {
 // ================= parseCSVLine =================
 vector<string> parseCSVLine(const string& line) {
     vector<string> result;
-    stringstream ss(line);
     string field;
+    stringstream ss(line);
 
     while (getline(ss, field, ',')) {
+        trim(field);
         result.push_back(field);
+    }
+
+    // handle trailing comma, like "John,Delta,,"
+    if (!line.empty() && line.back() == ',') {
+        result.push_back("");
     }
 
     return result;
